@@ -773,14 +773,17 @@ public class FacebookPublisher : Spit.Publishing.Publisher, GLib.Object {
                 get_persistent_uid(), get_persistent_user_name());
             on_session_authenticated();
         } else {
-            if (WebAuthenticationPane.is_cache_dirty()) {
+
+/*            if (WebAuthenticationPane.is_cache_dirty()) {
                 host.set_service_locked(false);
                 host.install_static_message_pane(RESTART_ERROR_MESSAGE,
                     Spit.Publishing.PluginHost.ButtonMode.CANCEL);
             } else {
+*/
                 session = new FacebookRESTSession(PHOTO_ENDPOINT_URL, USER_AGENT);
                 do_show_service_welcome_pane();
-            }
+/*            }
+*/
         }
     }
 
@@ -1130,19 +1133,24 @@ internal class FacebookRESTTransaction {
         warning("args len  '%d'", arguments.length);
         warning("formdata_string: '%s'", formdata_string);
 
+        string new_uri;
+
         if (get_method() == FacebookHttpMethod.GET && arguments.length > 0) {
+            warning("adding formdata");
             old_url = message.get_uri().to_string(false);
             string url_with_query = postprocessed_url + "&" + formdata_string;
-            message.set_uri(new Soup.URI(url_with_query));
+            new_uri = url_with_query;
         } else {
-            message.set_uri(new Soup.URI(postprocessed_url));
+            warning("basic uri");
+            new_uri = postprocessed_url;
         }
-
-        warning("uri is now '%s'", message.get_uri().to_string(false));
-
+        warning("uri is now '%s'", new_uri);
+        message.set_uri(new Soup.URI(new_uri));
 
         message.set_request("application/x-www-form-urlencoded", Soup.MemoryUse.COPY,
             formdata_string.data);
+        warning("appending data '%s'", formdata_string);
+
         is_executed = true;
         try {
             send();
@@ -1513,10 +1521,10 @@ internal class WebAuthenticationPane : Spit.Publishing.DialogPane, Object {
         pane_widget.get_window().set_cursor(new Gdk.Cursor(Gdk.CursorType.WATCH));
     }
 
-    public static bool is_cache_dirty() {
+/*    public static bool is_cache_dirty() {
         return cache_dirty;
     }
-
+*/
     public Gtk.Widget get_widget() {
         return pane_widget;
     }
