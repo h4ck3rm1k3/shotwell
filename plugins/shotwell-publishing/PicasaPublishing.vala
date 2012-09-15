@@ -111,10 +111,13 @@ public class PicasaPublisher : Spit.Publishing.Publisher, GLib.Object {
             if (doc_node_iter->name != "entry")
                 continue;
 
-            string name_val = null;
-            string url_val = null;
+            string name_val = "NULL";
+            string url_val = "NULL";
             Xml.Node* album_node_iter = doc_node_iter->children;
             for ( ; album_node_iter != null; album_node_iter = album_node_iter->next) {
+
+                debug("Check item %s",album_node_iter->name );
+
                 if (album_node_iter->name == "title") {
                     name_val = album_node_iter->get_content();
                 } else if (album_node_iter->name == "id") {
@@ -126,6 +129,8 @@ public class PicasaPublisher : Spit.Publishing.Publisher, GLib.Object {
                     url_val = album_node_iter->get_content();
                 }
             }
+
+            debug("Check album %s %s",name_val, url_val );
 
             result += new Album(name_val, url_val);
         }
