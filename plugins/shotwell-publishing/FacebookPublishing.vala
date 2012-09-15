@@ -1006,7 +1006,9 @@ internal class FacebookRESTTransaction {
 
     public FacebookRESTTransaction(FacebookRESTSession session, FacebookHttpMethod method = FacebookHttpMethod.POST) {
         parent_session = session;
-        message = new Soup.Message(method.to_string(), parent_session.get_endpoint_url());
+        string url=parent_session.get_endpoint_url();
+        warning("open url=%s",url);
+        message = new Soup.Message(method.to_string(), url);
         message.wrote_body_data.connect(on_wrote_body_data);
     }
 
@@ -1123,6 +1125,11 @@ internal class FacebookRESTTransaction {
         // transaction is completed so that the underlying Soup message remains consistent
         string old_url = message.get_uri().to_string(false);
         string postprocessed_url = old_url + "?access_token=" + parent_session.get_access_token();
+
+        warning("postprocessed_url  '%s'", postprocessed_url);
+        warning("args len  '%d'", arguments.length);
+        warning("formdata_string: '%s'", formdata_string);
+
         if (get_method() == FacebookHttpMethod.GET && arguments.length > 0) {
             old_url = message.get_uri().to_string(false);
             string url_with_query = postprocessed_url + "&" + formdata_string;
@@ -1130,6 +1137,9 @@ internal class FacebookRESTTransaction {
         } else {
             message.set_uri(new Soup.URI(postprocessed_url));
         }
+
+        warning("uri is now '%s'", message.get_uri().to_string(false));
+
 
         message.set_request("application/x-www-form-urlencoded", Soup.MemoryUse.COPY,
             formdata_string.data);
@@ -1149,6 +1159,7 @@ internal class FacebookRESTTransaction {
     }
 
     public void add_argument(string name, string value) {
+        warning("adding argument '%s' = '%s'",  name, value);
         arguments += new FacebookRESTArgument(name, value);
     }
 
@@ -1280,7 +1291,10 @@ internal class FacebookUploadTransaction : FacebookRESTTransaction {
 
         // attach each REST argument as its own multipart formdata part
         foreach (FacebookRESTArgument arg in request_arguments)
-            message_parts.append_form_string(arg.key, arg.value);
+            {
+                warning("adding argument to string '%s' = '%s'",  arg.key, arg.value);
+                message_parts.append_form_string(arg.key, arg.value);
+            }
 
 
         // attempt to map the binary payload from disk into memory
@@ -1512,7 +1526,9 @@ internal class WebAuthenticationPane : Spit.Publishing.DialogPane, Object {
     }
 
     public void on_pane_installed() {
-        webview.open(get_login_url());
+        string login_url=        get_login_url();
+        warning("login_url=%s",login_url);
+        webview.open(login_url);
     }
 
     public void on_pane_uninstalled() {
@@ -1837,6 +1853,8 @@ internal class FacebookRESTXmlDocument {
         throws Spit.Publishing.PublishingError {
         if (input_string == null || input_string.length == 0)
             throw new Spit.Publishing.PublishingError.MALFORMED_RESPONSE("Empty XML string");
+
+        warning(input_string);
 
         // Don't want blanks to be included as text nodes, and want the XML parser to tolerate
         // tolerable XML

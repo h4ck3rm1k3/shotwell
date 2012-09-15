@@ -780,7 +780,7 @@ internal class LegacyCredentialsPane : Gtk.VBox {
     private Gtk.Entry email_entry;
     private Gtk.Entry password_entry;
     private Gtk.Button login_button;
-    private Gtk.Button go_back_button;
+//    private Gtk.Button go_back_button;
     private string? username = null;
 
     public signal void go_back();
@@ -821,6 +821,8 @@ internal class LegacyCredentialsPane : Gtk.VBox {
             break;
         }
 
+
+/*
         Gtk.Alignment entry_widgets_table_aligner = new Gtk.Alignment(0.5f, 0.5f, 0.0f, 0.0f);
         Gtk.Table entry_widgets_table = new Gtk.Table(3,2, false);
         Gtk.Label email_entry_label = new Gtk.Label.with_mnemonic(_("_Email address:"));
@@ -869,9 +871,10 @@ internal class LegacyCredentialsPane : Gtk.VBox {
         password_entry_label.set_mnemonic_widget(password_entry);
 
         add(gtk_vspacer(40));
+*/
     }
 
-    private void on_login_button_clicked() {
+/*    private void on_login_button_clicked() {
         login(email_entry.get_text(), password_entry.get_text());
     }
 
@@ -882,7 +885,7 @@ internal class LegacyCredentialsPane : Gtk.VBox {
     private void on_email_changed() {
         login_button.set_sensitive(email_entry.get_text() != "");
     }
-
+*/
     public void installed() {
         host.set_service_locked(false);
 
